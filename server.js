@@ -129,9 +129,14 @@ function containsInjection(value) {
 
 const alertThrottle = new Map();
 
+// Explicit host/port instead of the `service: 'gmail'` shorthand, which defaults to
+// port 465 (SSL) — some hosts (Railway included) block that outbound port while
+// allowing 587 (STARTTLS), which is why this is spelled out rather than left implicit.
 const mailer = process.env.ALERT_EMAIL_FROM
   ? nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: { user: process.env.ALERT_EMAIL_FROM, pass: process.env.ALERT_EMAIL_PASSWORD },
     })
   : null;

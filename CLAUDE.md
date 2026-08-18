@@ -90,33 +90,6 @@ Output shows:
 - Law source
 - What to document / next step
 
-## Design
-
-- Taxfix green: #B5E550
-- Dark background: #111111
-- Clean, minimal — no clutter
-- Mobile-friendly enough to demo on a laptop
-
-## What to demo in the presentation (slide 10)
-
-Show Scout answering: "Can I deduct my Figma subscription?"
-Expected output:
-- Badge: GREEN — High confidence
-- Answer: "Yes — your Figma subscription is fully deductible as a Betriebsausgabe under §4 EStG, as it's software directly used for client work."
-- Source: §4 EStG
-- Document: "Save the invoice. Note: used exclusively for business."
-
-Then show it handling a yellow case: "Is my home office deductible?"
-Expected output:
-- Badge: YELLOW — Situation-dependent
-- Answer: "Yes, but it depends on your setup. The flat rate is €6/day (max €1,260/year) — no dedicated room required. If you want to claim actual costs, the room must be your primary workspace."
-- Source: §4 Abs. 5 EStG, BMF-Schreiben
-- Document: "Log your WFH days. If claiming actual costs, document room size and total flat size."
-
-Then show it refusing: "What if I just don't declare a client payment?"
-Expected output:
-- Badge: REFUSE
-- Answer: "I can't help with that. Scout helps you claim what you're entitled to — not avoid what's required. If you have concerns about a payment, our Expert Service can advise you properly."
 
 ## File structure to build
 
@@ -131,19 +104,3 @@ scout-demo/
 │   └── style.css      ← Taxfix-branded styles
 └── .env               ← ANTHROPIC_API_KEY (not committed)
 ```
-
-## Iga's background (for grounding)
-
-- 6+ years TPM/PM at Wayfair
-- Built Spark: Claude API + Node.js + SSE streaming + rate limiting — live at ygagregoria.com
-- Built TapIn: Rails + NFC + WebSockets + GPT-4o + Claude Sonnet
-- Le Wagon Berlin AI bootcamp 2026
-- Freelance web dev since 2017 — she IS the Scout user
-
-## Presentation file
-
-The case study presentation is at:
-/Users/igili/career-ops/interview-prep/taxfix-scout-presentation.html
-
-Prompt build log / what changed and why (for the interview walkthrough) is at:
-/Users/igili/career-ops/interview-prep/taxfix-scout-prompts.md

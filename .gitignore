@@ -1,0 +1,13 @@
+node_modules/
+.env
+
+# OS / editor clutter
+.DS_Store
+.claude/
+
+# Taxfix's confidential case-study materials — never publish these
+Case Study_ The AI Tax Assistant - AI First Builder (Self Employed).pdf
+Builder_Product_-_Candidate_Prep_Guide__R2-R4_(Self Employed).pdf
+
+# Empty leftover working folder
+pptx-work/

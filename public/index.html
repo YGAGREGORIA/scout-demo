@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scout — Deduction Discovery Assistant</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">Scout</span>
+        <span class="brand-sub">by Taxfix</span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="profile-card">
+        <div class="profile-avatar">IG</div>
+        <div class="profile-info">
+          <div class="profile-name">Freelance Web Developer</div>
+          <div class="profile-meta">Berlin, Germany · Self-employed since 2017</div>
+        </div>
+      </section>
+
+      <section class="account-section" id="account-section">
+        <h2 class="account-heading">What Scout knows about you</h2>
+        <div class="account-stats" id="account-stats"><!-- populated by JS --></div>
+        <div class="account-invoices" id="account-invoices"><!-- populated by JS --></div>
+      </section>
+
+      <section class="insights-section" id="insights-section">
+        <h2 class="insights-heading">Scout noticed</h2>
+
+        <div class="insight-card GREEN" data-followup="Is my home office deductible?">
+          <div class="badge GREEN">
+            <span class="badge-dot"></span>
+            GREEN — High confidence
+          </div>
+          <div class="insight-trigger">You've logged 142 home office days this year — already ahead of last year's total.</div>
+          <div class="insight-body">At the flat rate, that's €852 so far this year vs. €714 you claimed last year — €6/day, no dedicated room required.</div>
+          <div class="insight-source">§4 Abs. 5 EStG</div>
+          <button class="insight-followup" type="button">Ask Scout for details →</button>
+        </div>
+
+        <div class="insight-card GREEN" data-followup="Can I deduct my Figma subscription?">
+          <div class="badge GREEN">
+            <span class="badge-dot"></span>
+            GREEN — High confidence
+          </div>
+          <div class="insight-trigger">Your €15 Figma subscription renewed this month.</div>
+          <div class="insight-body">That invoice is fully deductible as a business expense under §4 EStG.</div>
+          <div class="insight-source">§4 EStG</div>
+          <button class="insight-followup" type="button">Ask Scout for details →</button>
+        </div>
+      </section>
+
+      <section class="ask-section">
+        <h1>Ask Scout anything about your taxes</h1>
+        <p class="ask-sub">Scout gives tax information, not tax advice — every answer comes with a confidence level and its legal source.</p>
+
+        <form id="ask-form" class="ask-form">
+          <textarea id="question" placeholder="e.g. Can I deduct my Figma subscription?" rows="3"></textarea>
+          <button type="submit" id="submit-btn">Ask Scout</button>
+        </form>
+
+        <div class="chips" id="chips">
+          <button class="chip" data-q="Can I deduct my Figma subscription?">Can I deduct my Figma subscription?</button>
+          <button class="chip" data-q="Is my home office deductible?">Is my home office deductible?</button>
+          <button class="chip" data-q="I had a client dinner for €80 — does it count?">I had a client dinner for €80 — does it count?</button>
+          <button class="chip" data-q="Can I deduct my new MacBook?">Can I deduct my new MacBook?</button>
+          <button class="chip" data-q="I bought a course on Udemy — is that deductible?">I bought a course on Udemy — is that deductible?</button>
+          <button class="chip" data-q="Do I owe VAT on this?">Do I owe VAT on this?</button>
+        </div>
+      </section>
+
+      <section id="result-section" class="result-section hidden">
+        <div id="result-card" class="result-card">
+          <!-- populated by JS -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

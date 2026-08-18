@@ -169,6 +169,9 @@ async function forwardToExpert(btn) {
   btn.disabled = true;
   btn.textContent = 'Forwarding…';
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
   try {
     const res = await fetch('/api/forward-to-expert', {
       method: 'POST',
@@ -179,7 +182,9 @@ async function forwardToExpert(btn) {
         question: currentQuestion,
         scoutAnswer: currentResult,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     const data = await res.json();
 
@@ -193,10 +198,14 @@ async function forwardToExpert(btn) {
 
     btn.outerHTML = '<p class="forward-expert-status forward-expert-status--success">Sent — an expert will review this and follow up.</p>';
   } catch (err) {
+    clearTimeout(timeout);
     btn.disabled = false;
     btn.textContent = 'Forward to Expert Service';
     btn.parentElement.querySelectorAll('.forward-expert-status').forEach((el) => el.remove());
-    btn.insertAdjacentHTML('afterend', '<p class="forward-expert-status forward-expert-status--error">Could not reach Scout. Please try again.</p>');
+    const message = err.name === 'AbortError'
+      ? 'This took too long and timed out. Please try again.'
+      : 'Could not reach Scout. Please try again.';
+    btn.insertAdjacentHTML('afterend', `<p class="forward-expert-status forward-expert-status--error">${message}</p>`);
   }
 }
 

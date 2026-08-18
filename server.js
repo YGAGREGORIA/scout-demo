@@ -1,8 +1,14 @@
 require('dotenv').config();
+const dns = require('dns');
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
 const nodemailer = require('nodemailer');
 const { SYSTEM_PROMPT } = require('./prompt');
+
+// Some hosts (Railway included) resolve Gmail's SMTP hostname to an IPv6 address
+// they have no outbound route for, failing with ENETUNREACH. Preferring IPv4
+// avoids that broken route instead of trying to work around it after the fact.
+dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

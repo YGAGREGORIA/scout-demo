@@ -123,16 +123,10 @@ function containsInjection(value) {
 
 const alertThrottle = new Map();
 
-// Explicit timeouts matter here: some hosts restrict/slow-walk outbound SMTP, and
-// nodemailer has no timeout by default — without one, a stalled connection hangs the
-// request indefinitely instead of failing with a clear error.
 const mailer = process.env.ALERT_EMAIL_FROM
   ? nodemailer.createTransport({
       service: 'gmail',
       auth: { user: process.env.ALERT_EMAIL_FROM, pass: process.env.ALERT_EMAIL_PASSWORD },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
     })
   : null;
 

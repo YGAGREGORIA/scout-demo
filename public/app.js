@@ -26,7 +26,7 @@ const ACCOUNT_DATA = {
   expenseInvoices: [
     { vendor: 'Figma', category: 'Software subscription', amount: 15, date: '2026-08-01' },
     { vendor: 'Adobe Creative Cloud', category: 'Software subscription', amount: 60.99, date: '2026-08-05' },
-    { vendor: 'Apple Store — MacBook Pro 14"', category: 'Hardware', amount: 2399, date: '2026-06-12' },
+    { vendor: 'Apple Store — MacBook Pro 14-inch', category: 'Hardware', amount: 2399, date: '2026-06-12' },
     { vendor: 'Udemy — Advanced React course', category: 'Professional development', amount: 19.99, date: '2026-05-20' },
     { vendor: 'Restaurant Zur Letzten Instanz', category: 'Client meal', amount: 80, date: '2026-07-22' },
   ],
@@ -69,11 +69,34 @@ insightsSection.addEventListener('click', (e) => {
   askScout(question);
 });
 
+const LOADING_STEPS = [
+  'Checking §4 EStG…',
+  'Comparing to your account data…',
+  'Weighing the confidence tier…',
+  'Finalizing…',
+];
+
+function startLoadingAnimation() {
+  resultCard.innerHTML = `
+    <div class="loading">
+      <span class="spinner"></span>
+      <span class="loading-text">${escapeHtml(LOADING_STEPS[0])}</span>
+    </div>
+  `;
+  const textEl = resultCard.querySelector('.loading-text');
+  let step = 0;
+  const interval = setInterval(() => {
+    step = (step + 1) % LOADING_STEPS.length;
+    if (textEl) textEl.textContent = LOADING_STEPS[step];
+  }, 2200);
+  return () => clearInterval(interval);
+}
+
 async function askScout(question) {
   currentQuestion = question;
   submitBtn.disabled = true;
   resultSection.classList.remove('hidden');
-  resultCard.innerHTML = '<div class="loading">Scout is checking §4 EStG…</div>';
+  const stopLoadingAnimation = startLoadingAnimation();
 
   try {
     const res = await fetch('/api/ask', {
@@ -83,6 +106,7 @@ async function askScout(question) {
     });
 
     const data = await res.json();
+    stopLoadingAnimation();
 
     if (!res.ok) {
       resultCard.innerHTML = `<div class="error-msg">${escapeHtml(data.error || 'Something went wrong.')}</div>`;
@@ -91,6 +115,7 @@ async function askScout(question) {
 
     renderResult(data);
   } catch (err) {
+    stopLoadingAnimation();
     resultCard.innerHTML = `<div class="error-msg">Could not reach Scout. Check that the server is running.</div>`;
   } finally {
     submitBtn.disabled = false;

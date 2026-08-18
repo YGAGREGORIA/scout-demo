@@ -136,6 +136,30 @@ Each one needed to fail gracefully — not with an error, but with a redirect th
 
 ---
 
+## What I trusted, edited, and rejected
+
+Not everything AI outputs is used. This is what got cut and why.
+
+**TRUSTED — Legal framework**
+Cross-checked directly against §4 EStG and BMF-Schreiben. Not outsourced to the model — the citations in the knowledge base were verified against the actual law text. Claude's knowledge of German tax law is accurate for the common deductions; I didn't need to correct it.
+
+**EDITED — Injection filtering**
+The first version of `server.js` only screened the question field for prompt injection. Account data and user profile flowed through unchecked — an obvious attack surface. Fixed with one shared `containsInjection()` check applied to all user-supplied input before it reaches the model.
+
+**REJECTED (concept) — Reactive Q&A chatbot**
+The first product framing was a chatbot: user asks, Scout answers. Rejected. That's what every other candidate builds. Pivoted to proactive deduction discovery — Scout surfaces what you're missing before you know to ask. The 50-week insight made this obvious: the tax outcome is decided during the year, not at filing time.
+
+**REJECTED (name) — Tax Radar**
+First name suggestion from the AI. Rejected immediately — too surveillance-y, wrong tone for a product that should feel like a co-pilot, not a monitor. Became Scout.
+
+**REJECTED (design) — Taxfix dark branding**
+First version of the presentation used Taxfix's own colour palette and style. Rejected in favour of my personal brand. Rationale: showing design taste and independence positions me as someone who can consult them, not just execute for them.
+
+**REJECTED (system prompt) — Personal tax advice framing**
+Claude's first system prompt draft answered questions as if giving personal advice — confident, direct, no caveats. Rejected and rewritten from scratch with the hard RDG boundary: tax information only, never advice, never a guaranteed outcome. The calibration rule ("a confidently wrong GREEN is worse than an overly cautious YELLOW") was added after the first draft failed the stress test.
+
+---
+
 ## The through-line
 
 > "I started where any PM should — understanding what already exists.

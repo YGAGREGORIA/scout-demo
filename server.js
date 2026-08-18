@@ -9,6 +9,53 @@ const PORT = process.env.PORT || 3000;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// Forces a guaranteed-valid structured response via tool use, instead of asking the
+// model to hand-write JSON as text. Removes an entire class of bug: any free-text
+// answer content (a client name with an apostrophe, a quote mark, anything) used to be
+// able to break naive string escaping and corrupt the whole response — the API now
+// enforces this schema itself, so that's no longer possible regardless of what's in the
+// account data or what the user asks.
+const SCOUT_ANSWER_TOOL = {
+  name: 'scout_answer',
+  description: "Return Scout's structured, tiered answer to the user's tax question.",
+  input_schema: {
+    type: 'object',
+    properties: {
+      tier: {
+        type: 'string',
+        enum: ['GREEN', 'YELLOW', 'RED', 'REFUSE'],
+        description: 'The confidence/trust tier for this answer.',
+      },
+      tierLabel: {
+        type: 'string',
+        description: "Short human label, e.g. 'High confidence', 'Situation-dependent', 'Route to Expert', 'Refused'.",
+      },
+      deductibility: {
+        type: 'string',
+        enum: ['Yes', 'Partial', 'No', 'Uncertain', ''],
+        description: 'Deductibility verdict, or empty string if not applicable (e.g. REFUSE).',
+      },
+      lawSource: {
+        type: 'string',
+        description: "e.g. '§4 Abs. 5 EStG'. Empty string if REFUSE.",
+      },
+      answer: {
+        type: 'string',
+        description: 'The deductibility answer in plain language, 1-3 sentences.',
+      },
+      document: {
+        type: 'string',
+        description: 'Practical next step / what to document, 1-2 sentences. Empty string if REFUSE.',
+      },
+      expertServiceNote: {
+        type: 'string',
+        description: 'Only populated for RED tier — short note on why this needs a professional. Empty string otherwise.',
+      },
+    },
+    required: ['tier', 'tierLabel', 'answer', 'deductibility', 'lawSource', 'document', 'expertServiceNote'],
+  },
+};
+
 const MAX_INPUT_CHARS = 600;
 const RATE_LIMIT = 20;
 const RATE_WINDOW = 60 * 60 * 1000;
@@ -172,37 +219,50 @@ app.post('/api/ask', async (req, res) => {
   const accountDataBlock = formatAccountData(accountData);
   const accountDataSection = accountDataBlock ? `\n\nAccount data:\n${accountDataBlock}` : '';
 
-  try {
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: `${profileLine}${accountDataSection}\n\nQuestion: ${question}`,
-        },
-      ],
-    });
+  const MAX_ATTEMPTS = 3;
+  let lastErr;
 
-    const raw = message.content[0].text.trim();
-    let parsed;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      parsed = JSON.parse(raw);
-    } catch (parseErr) {
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (match) {
-        parsed = JSON.parse(match[0]);
-      } else {
-        throw parseErr;
-      }
-    }
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        tools: [SCOUT_ANSWER_TOOL],
+        tool_choice: { type: 'tool', name: 'scout_answer' },
+        messages: [
+          {
+            role: 'user',
+            content: `${profileLine}${accountDataSection}\n\nQuestion: ${question}`,
+          },
+        ],
+      });
 
-    res.json(parsed);
-  } catch (err) {
-    console.error('Scout error:', err);
-    res.status(500).json({ error: 'Scout could not process that question. Please try again.' });
+      const toolUse = message.content.find((block) => block.type === 'tool_use' && block.name === 'scout_answer');
+      if (!toolUse) {
+        throw new Error('No scout_answer tool call in response');
+      }
+
+      const input = toolUse.input;
+      const parsed = {
+        tier: input.tier,
+        tierLabel: input.tierLabel,
+        deductibility: input.deductibility || null,
+        lawSource: input.lawSource || null,
+        answer: input.answer,
+        document: input.document || null,
+        expertServiceNote: input.expertServiceNote || null,
+      };
+
+      return res.json(parsed);
+    } catch (err) {
+      lastErr = err;
+      console.error(`Scout error (attempt ${attempt}/${MAX_ATTEMPTS}):`, err.message);
+    }
   }
+
+  console.error('Scout error: exhausted all attempts, last failure:', lastErr?.message);
+  res.status(500).json({ error: 'Scout could not process that question. Please try again.' });
 });
 
 app.post('/api/forward-to-expert', async (req, res) => {

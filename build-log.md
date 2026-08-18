@@ -11,6 +11,28 @@ Full working code: `prompt.js`, `server.js`, `public/` (this repo).
 
 ---
 
+## Before v1 — What I rejected before writing a line of code
+
+**Rejected: reactive Q&A chatbot**
+The obvious interpretation of "AI tax assistant" is a chatbot — user asks, model answers.
+Rejected. That's what every other candidate builds, and it doesn't address the real problem:
+self-employed users don't miss deductions because they can't get answers, they miss them
+because they don't know the question exists. Pivoted to proactive deduction discovery.
+The 50-week insight made this obvious: Taxfix sees a user for 2 weeks a year at filing time.
+The tax outcome is decided in the other 50.
+
+**Rejected: "Tax Radar" as the product name**
+First name out of the AI. Rejected immediately — surveillance-y, wrong tone for something
+that should feel like a co-pilot. Became Scout.
+
+**Rejected: Taxfix dark branding for the presentation**
+First version of the slides used Taxfix's own colour palette. Rejected in favour of my
+personal brand. Rationale: showing design independence positions me as someone who can
+consult them, not just execute for them. It also demonstrates taste — one of the grading
+criteria the brief doesn't name explicitly but every interviewer applies implicitly.
+
+---
+
 ## v1 — Initial system prompt (from the original spec)
 
 Built from CLAUDE.md's brief before I had the actual case study document: trust tiers

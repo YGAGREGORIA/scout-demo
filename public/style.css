@@ -465,8 +465,29 @@ button#submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--text-dim);
   font-size: 14px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--taxfix-green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  transition: opacity 0.15s;
 }
 
 .error-msg {

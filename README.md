@@ -8,7 +8,8 @@ answers — they miss them because they don't know the question exists. Scout su
 what you're missing before you ask, and answers what you do ask with a calibrated
 confidence tier and a legal citation, grounded in your actual account data.
 
-**Live demo:** https://scout-demo-production-939a.up.railway.app
+- **Live demo:** https://scout-demo-production-939a.up.railway.app
+- **Presentation:** https://drive.google.com/file/d/135FvVlzjX3RRcllCIUT__sfXt6TcJPyM/view?usp=sharing
 
 ---
 
